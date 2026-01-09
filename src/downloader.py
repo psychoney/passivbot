@@ -721,7 +721,11 @@ class OHLCVManager:
 
     def load_cc(self):
         if self.cc is None:
-            self.cc = getattr(ccxt, self.exchange)({"enableRateLimit": True})
+            ccxt_options = {"enableRateLimit": True}
+            aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
+            if aiohttp_proxy:
+                ccxt_options["aiohttp_proxy"] = aiohttp_proxy
+            self.cc = getattr(ccxt, self.exchange)(ccxt_options)
             self.cc.options["defaultType"] = "swap"
 
     async def load_markets(self):

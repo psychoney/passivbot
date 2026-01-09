@@ -1,5 +1,6 @@
 from passivbot import Passivbot, logging
 from uuid import uuid4
+import os
 import passivbot_rust as pbr
 import ccxt.pro as ccxt_pro
 import ccxt.async_support as ccxt_async
@@ -37,28 +38,24 @@ class OKXBot(Passivbot):
         self.okx_pm_account = False
 
     def create_ccxt_sessions(self):
+        ccxt_config = {
+            "apiKey": self.user_info["key"],
+            "secret": self.user_info["secret"],
+            "password": self.user_info["passphrase"],
+            "enableRateLimit": True,
+        }
+        # aiohttp doesn't read proxy from env vars automatically
+        aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
+        if aiohttp_proxy:
+            ccxt_config["aiohttp_proxy"] = aiohttp_proxy
         if self.ws_enabled:
-            self.ccp = getattr(ccxt_pro, self.exchange)(
-                {
-                    "apiKey": self.user_info["key"],
-                    "secret": self.user_info["secret"],
-                    "password": self.user_info["passphrase"],
-                    "enableRateLimit": True,
-                }
-            )
+            self.ccp = getattr(ccxt_pro, self.exchange)(ccxt_config)
             self.ccp.options.update(self._build_ccxt_options())
             self.ccp.options["defaultType"] = "swap"
             self._apply_endpoint_override(self.ccp)
         elif self.endpoint_override:
             logging.info("Skipping OKX websocket session due to custom endpoint override.")
-        self.cca = getattr(ccxt_async, self.exchange)(
-            {
-                "apiKey": self.user_info["key"],
-                "secret": self.user_info["secret"],
-                "password": self.user_info["passphrase"],
-                "enableRateLimit": True,
-            }
-        )
+        self.cca = getattr(ccxt_async, self.exchange)(ccxt_config)
         self.cca.options.update(self._build_ccxt_options())
         self.cca.options["defaultType"] = "swap"
         self._apply_endpoint_override(self.cca)
