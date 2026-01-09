@@ -1,6 +1,5 @@
 from passivbot import Passivbot, logging, get_function_name
 from uuid import uuid4
-import os
 import ccxt.pro as ccxt_pro
 import ccxt.async_support as ccxt_async
 import pprint
@@ -50,10 +49,6 @@ class HyperliquidBot(Passivbot):
             "walletAddress": self.user_info["wallet_address"],
             "privateKey": self.user_info["private_key"],
         }
-        # aiohttp doesn't read proxy from env vars automatically
-        aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
-        if aiohttp_proxy:
-            creds["aiohttp_proxy"] = aiohttp_proxy
         if self.ws_enabled:
             self.ccp = getattr(ccxt_pro, self.exchange)(creds)
             self.ccp.options.update(self._build_ccxt_options())

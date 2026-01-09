@@ -1,5 +1,4 @@
 from __future__ import annotations
-import os
 from passivbot import Passivbot, logging
 from uuid import uuid4
 import ccxt.pro as ccxt_pro
@@ -141,10 +140,6 @@ class KucoinBot(Passivbot):
             "password": self.user_info["passphrase"],
             "enableRateLimit": True,
         }
-        # aiohttp doesn't read proxy from env vars automatically
-        aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
-        if aiohttp_proxy:
-            base_kwargs["aiohttp_proxy"] = aiohttp_proxy
         if options:
             base_kwargs["options"] = options
 

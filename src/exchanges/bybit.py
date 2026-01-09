@@ -1,6 +1,5 @@
 from passivbot import Passivbot, logging, clip_by_timestamp
 from uuid import uuid4
-import os
 import ccxt.pro as ccxt_pro
 import ccxt.async_support as ccxt_async
 from ccxt.base.errors import InvalidNonce
@@ -29,24 +28,29 @@ class BybitBot(Passivbot):
         super().__init__(config)
 
     def create_ccxt_sessions(self):
-        ccxt_config = {
-            "apiKey": self.user_info["key"],
-            "secret": self.user_info["secret"],
-            "password": self.user_info["passphrase"],
-            "headers": {"referer": self.broker_code} if self.broker_code else {},
-            "enableRateLimit": True,
-        }
-        # aiohttp doesn't read proxy from env vars automatically
-        aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
-        if aiohttp_proxy:
-            ccxt_config["aiohttp_proxy"] = aiohttp_proxy
         if self.ws_enabled:
-            self.ccp = getattr(ccxt_pro, self.exchange)(ccxt_config)
+            self.ccp = getattr(ccxt_pro, self.exchange)(
+                {
+                    "apiKey": self.user_info["key"],
+                    "secret": self.user_info["secret"],
+                    "password": self.user_info["passphrase"],
+                    "headers": {"referer": self.broker_code} if self.broker_code else {},
+                    "enableRateLimit": True,
+                }
+            )
             self.ccp.options.update(self._build_ccxt_options())
             self._apply_endpoint_override(self.ccp)
         elif self.endpoint_override:
             logging.info("Skipping Bybit websocket session due to custom endpoint override.")
-        self.cca = getattr(ccxt_async, self.exchange)(ccxt_config)
+        self.cca = getattr(ccxt_async, self.exchange)(
+            {
+                "apiKey": self.user_info["key"],
+                "secret": self.user_info["secret"],
+                "password": self.user_info["passphrase"],
+                "headers": {"referer": self.broker_code} if self.broker_code else {},
+                "enableRateLimit": True,
+            }
+        )
         self.cca.options.update(self._build_ccxt_options())
         self._apply_endpoint_override(self.cca)
 

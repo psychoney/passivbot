@@ -32,7 +32,6 @@ To customize behavior for a new exchange:
 """
 
 import asyncio
-import os
 import time
 import traceback
 
@@ -154,11 +153,6 @@ class CCXTBot(Passivbot):
 
         config = {k: v for k, v in self.user_info.items() if k not in passivbot_fields}
         config["enableRateLimit"] = True
-
-        # aiohttp doesn't read proxy from env vars automatically, so we do it here
-        aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
-        if aiohttp_proxy:
-            config["aiohttp_proxy"] = aiohttp_proxy
 
         # Warn about legacy credential field names
         legacy_mappings = {
