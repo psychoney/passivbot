@@ -1,5 +1,6 @@
 from passivbot import Passivbot, logging
 from uuid import uuid4
+import os
 import ccxt.pro as ccxt_pro
 import ccxt.async_support as ccxt_async
 import asyncio
@@ -25,23 +26,20 @@ class DefxBot(Passivbot):
         self.hedge_mode = False
 
     def create_ccxt_sessions(self):
+        ccxt_config = {
+            "apiKey": self.user_info["key"],
+            "secret": self.user_info["secret"],
+            "enableRateLimit": True,
+        }
+        # aiohttp doesn't read proxy from env vars automatically
+        aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
+        if aiohttp_proxy:
+            ccxt_config["aiohttp_proxy"] = aiohttp_proxy
         if self.ws_enabled:
-            self.ccp = getattr(ccxt_pro, self.exchange)(
-                {
-                    "apiKey": self.user_info["key"],
-                    "secret": self.user_info["secret"],
-                    "enableRateLimit": True,
-                }
-            )
+            self.ccp = getattr(ccxt_pro, self.exchange)(ccxt_config)
         elif self.endpoint_override:
             logging.info("Skipping Defx websocket session due to custom endpoint override.")
-        self.cca = getattr(ccxt_async, self.exchange)(
-            {
-                "apiKey": self.user_info["key"],
-                "secret": self.user_info["secret"],
-                "enableRateLimit": True,
-            }
-        )
+        self.cca = getattr(ccxt_async, self.exchange)(ccxt_config)
         if self.ws_enabled and self.ccp is not None:
             self.ccp.options.update(self._build_ccxt_options())
             self.ccp.options["defaultType"] = "swap"

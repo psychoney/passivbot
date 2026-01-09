@@ -1,5 +1,6 @@
 from passivbot import Passivbot, logging
 from uuid import uuid4
+import os
 import passivbot_rust as pbr
 
 round_ = pbr.round_
@@ -38,19 +39,22 @@ class BinanceBot(Passivbot):
             targets.append(("ccp", ccxt_pro))
         elif self.endpoint_override:
             logging.info("Skipping Binance websocket session due to custom endpoint override.")
+        ccxt_config = {
+            "apiKey": self.user_info["key"],
+            "secret": self.user_info["secret"],
+            "password": self.user_info["passphrase"],
+            "enableRateLimit": True,
+        }
+        # aiohttp doesn't read proxy from env vars automatically
+        aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
+        if aiohttp_proxy:
+            ccxt_config["aiohttp_proxy"] = aiohttp_proxy
         for ccx, ccxt_module in targets:
             exchange_class = getattr(ccxt_module, "binanceusdm")
             setattr(
                 self,
                 ccx,
-                exchange_class(
-                    {
-                        "apiKey": self.user_info["key"],
-                        "secret": self.user_info["secret"],
-                        "password": self.user_info["passphrase"],
-                        "enableRateLimit": True,
-                    }
-                ),
+                exchange_class(ccxt_config),
             )
             getattr(self, ccx).options.update(self._build_ccxt_options())
             getattr(self, ccx).options["defaultType"] = "swap"
