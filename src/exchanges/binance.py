@@ -49,6 +49,8 @@ class BinanceBot(Passivbot):
         aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
         if aiohttp_proxy:
             ccxt_config["aiohttp_proxy"] = aiohttp_proxy
+            # WebSocket connections also need proxy configured separately
+            ccxt_config["wsProxy"] = aiohttp_proxy
         for ccx, ccxt_module in targets:
             exchange_class = getattr(ccxt_module, "binanceusdm")
             setattr(

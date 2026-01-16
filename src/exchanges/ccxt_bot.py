@@ -159,6 +159,8 @@ class CCXTBot(Passivbot):
         aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
         if aiohttp_proxy:
             config["aiohttp_proxy"] = aiohttp_proxy
+            # WebSocket connections also need proxy configured separately
+            config["wsProxy"] = aiohttp_proxy
 
         # Warn about legacy credential field names
         legacy_mappings = {

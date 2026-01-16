@@ -581,6 +581,8 @@ def load_ccxt_instance(exchange_id: str, enable_rate_limit: bool = True):
     aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
     if aiohttp_proxy:
         ccxt_options["aiohttp_proxy"] = aiohttp_proxy
+        # WebSocket connections also need proxy configured separately
+        ccxt_options["wsProxy"] = aiohttp_proxy
     try:
         cc = getattr(ccxt, ex)(ccxt_options)
     except Exception:

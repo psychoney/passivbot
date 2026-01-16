@@ -54,6 +54,8 @@ class HyperliquidBot(Passivbot):
         aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
         if aiohttp_proxy:
             creds["aiohttp_proxy"] = aiohttp_proxy
+            # WebSocket connections also need proxy configured separately
+            creds["wsProxy"] = aiohttp_proxy
         if self.ws_enabled:
             self.ccp = getattr(ccxt_pro, self.exchange)(creds)
             self.ccp.options.update(self._build_ccxt_options())

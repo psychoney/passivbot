@@ -35,6 +35,8 @@ class DefxBot(Passivbot):
         aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
         if aiohttp_proxy:
             ccxt_config["aiohttp_proxy"] = aiohttp_proxy
+            # WebSocket connections also need proxy configured separately
+            ccxt_config["wsProxy"] = aiohttp_proxy
         if self.ws_enabled:
             self.ccp = getattr(ccxt_pro, self.exchange)(ccxt_config)
         elif self.endpoint_override:

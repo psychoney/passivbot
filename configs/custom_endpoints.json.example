@@ -9,7 +9,7 @@
     },
     "exchanges": {
         "binanceusdm": {
-            "disable_ws": true,
+            "disable_ws": false,
             "rest": {
                 "rewrite_domains": {
                     "https://fapi.binance.com": "https://proxy.example.exchange"

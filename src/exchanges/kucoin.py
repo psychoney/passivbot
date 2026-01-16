@@ -145,6 +145,8 @@ class KucoinBot(Passivbot):
         aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
         if aiohttp_proxy:
             base_kwargs["aiohttp_proxy"] = aiohttp_proxy
+            # WebSocket connections also need proxy configured separately
+            base_kwargs["wsProxy"] = aiohttp_proxy
         if options:
             base_kwargs["options"] = options
 
