@@ -140,12 +140,12 @@ class KucoinBot(Passivbot):
             "secret": self.user_info["secret"],
             "password": self.user_info["passphrase"],
             "enableRateLimit": True,
+            # Let aiohttp read proxy from env vars (HTTP_PROXY, HTTPS_PROXY, etc.)
+            "aiohttp_trust_env": True,
         }
-        # aiohttp doesn't read proxy from env vars automatically
+        # WebSocket connections also need proxy configured separately
         aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
         if aiohttp_proxy:
-            base_kwargs["aiohttp_proxy"] = aiohttp_proxy
-            # WebSocket connections also need proxy configured separately
             base_kwargs["wsProxy"] = aiohttp_proxy
         if options:
             base_kwargs["options"] = options

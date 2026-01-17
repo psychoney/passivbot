@@ -576,12 +576,14 @@ def load_ccxt_instance(exchange_id: str, enable_rate_limit: bool = True):
     The returned instance should be closed by the caller with: await cc.close()
     """
     ex = normalize_exchange_name(exchange_id)
-    ccxt_options = {"enableRateLimit": bool(enable_rate_limit)}
-    # aiohttp doesn't read proxy from env vars automatically, so we do it here
+    ccxt_options = {
+        "enableRateLimit": bool(enable_rate_limit),
+        # Let aiohttp read proxy from env vars (HTTP_PROXY, HTTPS_PROXY, etc.)
+        "aiohttp_trust_env": True,
+    }
+    # WebSocket connections also need proxy configured separately
     aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
     if aiohttp_proxy:
-        ccxt_options["aiohttp_proxy"] = aiohttp_proxy
-        # WebSocket connections also need proxy configured separately
         ccxt_options["wsProxy"] = aiohttp_proxy
     try:
         cc = getattr(ccxt, ex)(ccxt_options)

@@ -154,12 +154,12 @@ class CCXTBot(Passivbot):
 
         config = {k: v for k, v in self.user_info.items() if k not in passivbot_fields}
         config["enableRateLimit"] = True
+        # Let aiohttp read proxy from env vars (HTTP_PROXY, HTTPS_PROXY, etc.)
+        config["aiohttp_trust_env"] = True
 
-        # aiohttp doesn't read proxy from env vars automatically, so we do it here
+        # WebSocket connections also need proxy configured separately
         aiohttp_proxy = os.environ.get("https_proxy") or os.environ.get("http_proxy")
         if aiohttp_proxy:
-            config["aiohttp_proxy"] = aiohttp_proxy
-            # WebSocket connections also need proxy configured separately
             config["wsProxy"] = aiohttp_proxy
 
         # Warn about legacy credential field names

@@ -383,7 +383,7 @@ async def fetch_url(session, url, retries=5, backoff=1.5):
 
 
 async def fetch_zips(url):
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(trust_env=True) as session:
         try:
             content = await fetch_url(session, url)
             if content is None:
@@ -991,7 +991,7 @@ class OHLCVManager:
             f"{symbolf}{day}.csv.gz" for day in missing_days if f"{symbolf}{day}.csv.gz" in webpage
         ]
         # Download concurrently
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(trust_env=True) as session:
             tasks = []
             for fn in filenames:
                 url = f"{base_url}{symbolf}/{fn}"
@@ -1113,7 +1113,7 @@ class OHLCVManager:
 
             try:
                 await self.check_rate_limit()
-                async with aiohttp.ClientSession() as session:
+                async with aiohttp.ClientSession(trust_env=True) as session:
                     async with session.head(url) as response:
                         if self.verbose:
                             logging.info(
@@ -1133,7 +1133,7 @@ class OHLCVManager:
             prev_url = self.get_url_bitget(base_url, symbol, prev_day.strftime("%Y%m%d"))
             try:
                 await self.check_rate_limit()
-                async with aiohttp.ClientSession() as session:
+                async with aiohttp.ClientSession(trust_env=True) as session:
                     async with session.head(prev_url) as response:
                         if response.status == 200:
                             earliest = prev_day
@@ -1238,7 +1238,7 @@ class OHLCVManager:
             url = f"{base_url}{symbolf}/1m/{symbolf}-1m-{day}.zip"
             try:
                 await self.check_rate_limit()
-                async with aiohttp.ClientSession() as session:
+                async with aiohttp.ClientSession(trust_env=True) as session:
                     async with session.head(url) as response:
                         if self.verbose:
                             logging.info(
@@ -1258,7 +1258,7 @@ class OHLCVManager:
             prev_url = f"{base_url}{symbolf}/1m/{symbolf}-1m-{prev_day_str}.zip"
             try:
                 await self.check_rate_limit()
-                async with aiohttp.ClientSession() as session:
+                async with aiohttp.ClientSession(trust_env=True) as session:
                     async with session.head(prev_url) as response:
                         if response.status == 200:
                             earliest = prev_day

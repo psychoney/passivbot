@@ -2275,6 +2275,7 @@ class CandlestickManager:
                 self._http_session = aiohttp.ClientSession(
                     timeout=timeout,
                     connector=connector,
+                    trust_env=True,  # Read proxy from env vars (HTTP_PROXY, HTTPS_PROXY, etc.)
                 )
             return self._http_session
 
