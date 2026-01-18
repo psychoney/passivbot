@@ -202,7 +202,7 @@
         "balance_override": null,
         "candle_lock_timeout_seconds": 10.0,
         "empty_means_all_approved": true,
-        "execution_delay_seconds": 2,
+        "execution_delay_seconds": 5,
         "filter_by_min_effective_cost": true,
         "forced_mode_long": "",
         "forced_mode_short": "",
